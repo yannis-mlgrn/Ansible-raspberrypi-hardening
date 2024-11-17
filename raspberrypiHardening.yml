@@ -1,0 +1,7 @@
+---
+
+- name: Apply roles to Raspberry Pi
+  hosts: raspberrypi
+  become: yes
+  roles:
+    - ssh

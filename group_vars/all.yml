@@ -1,0 +1,4 @@
+---
+
+# SSH Configuration
+ssh_port: 2224  # Port personnalisé pour SSH

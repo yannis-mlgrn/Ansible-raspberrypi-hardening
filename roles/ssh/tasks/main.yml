@@ -1,0 +1,11 @@
+---
+- name: Secure SSH on Raspberry Pi
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - { regexp: '^#?Port ', line: "Port {{ ssh_port }}" }
+    - { regexp: '^#?PermitRootLogin ', line: "PermitRootLogin no" }
+    - { regexp: '^#?PasswordAuthentication ', line: "PasswordAuthentication no" }
