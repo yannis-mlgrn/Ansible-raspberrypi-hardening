@@ -1,0 +1,11 @@
+[sshd]
+enabled = true
+bantime = -1
+maxretry = 3
+port = 2224
+filter = sshd
+backend = systemd
+logpath = %(sshd_log)s 
+action = ufw[name=SSH, port={{ssh_port}}, protocol=tcp]
+         telegram
+

@@ -1,0 +1,19 @@
+---
+
+- name: Restrict access to /boot directory
+  file:
+    path: /boot
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+  become: true
+
+- name: Set inactivity timeout for local user sessions
+  lineinfile:
+    path: /etc/profile
+    regexp: '^TMOUT='
+    line: 'TMOUT=600'
+    create: yes
+    state: present
+  become: true

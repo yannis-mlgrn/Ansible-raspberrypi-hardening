@@ -1,0 +1,44 @@
+---
+- name: Install UFW
+  apt:
+    name: ufw
+    state: present
+    update_cache: yes
+
+- name: Set UFW default policy to deny incoming
+  ufw:
+    default: deny
+    direction: incoming
+
+- name: Set UFW default policy to allow outgoing
+  ufw:
+    default: allow
+    direction: outgoing
+
+- name: Limit SSH connections on custom port
+  ufw:
+    rule: limit
+    port: "{{ ssh_port }}"
+    proto: tcp
+    state: enabled
+
+- name: Allow HTTP traffic
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+    state: enabled
+
+- name: Allow HTTPS traffic
+  ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+    state: enabled
+
+- name: Enable UFW logging
+  command: ufw logging on
+
+- name: Enable UFW
+  ufw:
+    state: enabled

@@ -1,4 +1,15 @@
 ---
+- name: Create ssh-users group
+  group:
+    name: ssh-users
+    state: present
+
+- name: Add the current user to ssh-users group
+  user:
+    name: "{{ ansible_user }}"
+    groups: ssh-users
+    append: true
+
 - name: Secure SSH on Raspberry Pi
   lineinfile:
     path: /etc/ssh/sshd_config
@@ -9,3 +20,46 @@
     - { regexp: '^#?Port ', line: "Port {{ ssh_port }}" }
     - { regexp: '^#?PermitRootLogin ', line: "PermitRootLogin no" }
     - { regexp: '^#?PasswordAuthentication ', line: "PasswordAuthentication no" }
+    - { regexp: '^#?X11Forwarding ', line: "X11Forwarding no" }
+    - { regexp: '^#?AllowGroups ', line: "AllowGroups ssh-users" }
+
+- name: Ensure /etc/pam.scripts directory exists
+  ansible.builtin.file:
+    path: /etc/pam.scripts
+    state: directory
+    mode: '0755'
+
+- name: Copy login-notification.sh script
+  ansible.builtin.copy:
+    dest: /etc/pam.scripts/login-notification.sh
+    content: |
+      #!/bin/bash
+      TOKEN="{{ telegram_bot_token }}"
+      ID="{{ chat_id}}"
+      HOSTNAME=$(hostname -f)
+      DATE="$(date "+%d.%b.%Y -- %H:%M")"
+      MESSAGE="ℹ️ [SECURITY INFO]: %0A<b>$PAM_USER</b> did action: '<b>$PAM_TYPE</b>'%0A📅 Date: <u>$DATE</u>%0A💻 Hostname: $HOSTNAME%0A🌐 IP: <code>$PAM_RHOST</code>"
+      URL="https://api.telegram.org/bot$TOKEN/sendMessage"
+      
+      curl -s -X POST $URL -d chat_id=$ID -d text="$MESSAGE" -d parse_mode='HTML' 2>&1 >/dev/null
+      
+      exit 0
+    mode: '0755'
+
+- name: Ensure login-notification.sh is executable
+  ansible.builtin.file:
+    path: /etc/pam.scripts/login-notification.sh
+    mode: '0755'
+
+- name: Add PAM SSHD configuration to trigger the script
+  ansible.builtin.blockinfile:
+    path: /etc/pam.d/sshd
+    insertafter: EOF
+    block: |
+      # SSH Alert script
+      session required pam_exec.so /etc/pam.scripts/login-notification.sh
+      
+- name: Restart SSH service
+  service:
+    name: ssh
+    state: restarted

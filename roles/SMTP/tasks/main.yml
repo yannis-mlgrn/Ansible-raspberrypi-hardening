@@ -1,0 +1,29 @@
+---
+- name: Install msmtp and msmtp-mta
+  become: yes
+  apt:
+    name:
+      - msmtp
+      - msmtp-mta
+    state: present
+    update_cache: yes
+
+- name: Create msmtp configuration file
+  template:
+    src: msmtprc.j2
+    dest: /etc/msmtprc
+    owner: root
+    group: mail
+    mode: '0600'
+
+- name: Create symbolic link for mail
+  file:
+    src: /usr/bin/msmtp
+    dest: /usr/sbin/sendmail
+    state: link
+
+- name: Configure /etc/aliases for root emails
+  lineinfile:
+    path: /etc/aliases
+    line: "root: {{ mail_user }}"
+    create: yes

@@ -1,0 +1,23 @@
+--- 
+- name: Install rsyslog
+  package:
+    name: rsyslog
+    state: present
+
+- name: Ensure rsyslog service is enabled and running
+  service:
+    name: rsyslog
+    state: started
+    enabled: true
+
+- name: Configure rsyslog to log auth messages to /var/log/auth.log
+  lineinfile:
+    path: /etc/rsyslog.d/50-default.conf
+    regexp: '^auth,authpriv\.'
+    line: 'auth,authpriv.* /var/log/auth.log'
+    create: yes
+
+- name: Restart rsyslog service
+  service:
+    name: rsyslog
+    state: restarted

@@ -1,0 +1,20 @@
+# Default values for all accounts
+defaults
+auth on
+tls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+
+# SMTP account
+account default
+host {{ mail_smtp_server }}
+from {{ mail_user }}
+port {{ mail_port }}
+user {{ mail_user }}
+password {{ mail_password }}
+
+# Syslog logging
+syslog {{ mail_syslog }}
+
+# Use the default account for all system emails
+aliases        /etc/aliases
+account default : default

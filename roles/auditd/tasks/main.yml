@@ -1,0 +1,40 @@
+---
+- name: Install auditd
+  package:
+    name: auditd
+    state: present
+
+- name: Ensure auditd service is enabled and running
+  service:
+    name: auditd
+    state: started
+    enabled: true
+
+- name: Configure audit rules for monitoring /etc/passwd
+  lineinfile:
+    path: /etc/audit/rules.d/audit.rules
+    line: '-w /etc/passwd -p wa -k passwd_changes'
+    create: yes
+
+- name: Configure audit rules for monitoring /etc/shadow
+  lineinfile:
+    path: /etc/audit/rules.d/audit.rules
+    line: '-w /etc/shadow -p wa -k shadow_changes'
+    create: yes
+
+- name: Configure audit rules for monitoring sudo log
+  lineinfile:
+    path: /etc/audit/rules.d/audit.rules
+    line: '-w /var/log/sudo.log -p wa -k sudo_usage'
+    create: yes
+
+- name: Restart auditd service
+  service:
+    name: auditd
+    state: restarted
+
+- name: Ensure auditd is started on boot
+  service:
+    name: auditd
+    enabled: yes
+    state: started

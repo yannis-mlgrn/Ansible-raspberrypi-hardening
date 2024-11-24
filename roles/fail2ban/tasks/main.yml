@@ -1,0 +1,38 @@
+--- 
+- name: Ensure fail2ban is installed
+  ansible.builtin.apt:
+    name: fail2ban
+    state: present
+
+- name: Copy the Fail2ban configuration
+  ansible.builtin.template:
+    src: templates/jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Créer le répertoire pour les scripts Fail2Ban
+  file:
+    path: /etc/fail2ban/scripts
+    state: directory
+    mode: '0755'
+
+- name: Copier le script de notification Telegram avec les variables
+  template:
+    src: send_telegram_notif.sh.j2
+    dest: /etc/fail2ban/scripts/send_telegram_notif.sh
+    mode: '0755'
+
+- name: Copier le fichier de configuration Telegram
+  template:
+    src: telegram.conf.j2
+    dest: /etc/fail2ban/action.d/telegram.conf
+
+- name: Ensure Fail2ban service is enabled and running
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: true
+
+

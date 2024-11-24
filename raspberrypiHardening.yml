@@ -1,7 +1,13 @@
 ---
-
-- name: Apply roles to Raspberry Pi
+- name: hardening Raspberry Pi server
   hosts: raspberrypi
   become: yes
   roles:
-    - ssh
+    - system-hardening
+    - rsyslog
+    - ssh # hardening ssh
+    - ufw # install and configure UFW firewall
+    - auditd # install and configure auditd
+    - SMTP # add the SMTP server role
+    - fail2ban # install and configure fail2ban
+    - unattended-upgrades # install and configure unattended-upgrades
