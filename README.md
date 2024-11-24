@@ -36,6 +36,30 @@ raspberrypi:
 ```
 
 Replace `<raspberry_pi_ip>` with the IP address of your Raspberry Pi.
+### 4. **Modify `all.yml` Content**
+
+Ensure that the `all.yml` file contains the necessary variables and configurations for the playbook. Here is an example of what the `all.yml` file might look like:
+
+```yaml
+---
+ansible_user: <sshuser>  # User use to run the playbook on the remote host
+
+# SSH Configurations
+ssh_port: 2224  # Port personnalisé pour SSH
+mail_user: <email>
+mail_password: "<google_app_password>" # use google app password
+mail_smtp_server: smtp.gmail.com # for gmail mail 
+mail_port: 587
+mail_syslog: "LOG_MAIL" # Syslog facility 
+
+# Telegram bot configuration
+telegram_bot_token: "<token>" # Telegram bot token
+chat_id: "<chat_id>" # Telegram chat id
+
+
+```
+
+Adjust the configurations as needed for your specific requirements.
 
 ### 4. **Test the Connection**
 

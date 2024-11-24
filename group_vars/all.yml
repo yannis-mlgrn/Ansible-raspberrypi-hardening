@@ -1,5 +1,6 @@
 ---
 ansible_user: <sshuser>  # User use to run the playbook on the remote host
+
 # SSH Configurations
 ssh_port: 2224  # Port personnalisé pour SSH
 mail_user: <email>
